@@ -31,9 +31,9 @@ Incluye:
 
 ## 👨‍💻 Autor
 
-Henry Ramirez  
-Ingeniero en Software y Sistemas Computacionales  
-Interesado en desarrollo frontend y ciberseguridad.
+Henry Ramirez
+Ingeniero en Software y Sistemas Computacionales
+Especializado en desarrollo web y aplicaciones móviles.
 
 ---
 
