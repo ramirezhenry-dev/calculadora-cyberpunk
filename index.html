@@ -4,23 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculadora | ramirezhenry-dev</title>
+  <!-- Google Fonts: Share Tech Mono for body text, Orbitron for display/headers -->
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
+    /* Reset: remove default margin, padding and set box-sizing for all elements */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ============================================================
+       CSS CUSTOM PROPERTIES (Design Tokens)
+       Centralized color and glow effect variables for easy theming
+       ============================================================ */
     :root {
-      --neon-blue: #00d4ff;
-      --neon-purple: #bf00ff;
-      --neon-pink: #ff0080;
-      --dark-bg: #050510;
-      --panel-bg: #0a0a1f;
-      --panel-border: #1a1a3e;
-      --text-main: #e0f0ff;
+      --neon-blue: #00d4ff;       /* Primary accent color */
+      --neon-purple: #bf00ff;     /* Secondary accent - used for operators */
+      --neon-pink: #ff0080;       /* Danger/clear button color */
+      --dark-bg: #050510;         /* Main background color */
+      --panel-bg: #0a0a1f;        /* Calculator panel background */
+      --panel-border: #1a1a3e;    /* Default border color */
+      --text-main: #e0f0ff;       /* Primary text color */
+      /* Box-shadow glow effects for neon lighting simulation */
       --glow-blue: 0 0 8px #00d4ff, 0 0 20px #00d4ff44;
       --glow-purple: 0 0 8px #bf00ff, 0 0 20px #bf00ff44;
       --glow-pink: 0 0 8px #ff0080, 0 0 20px #ff008044;
     }
 
+    /* Full viewport centered layout */
     body {
       min-height: 100vh;
       background: var(--dark-bg);
@@ -32,7 +40,10 @@
       position: relative;
     }
 
-    /* Animated grid background */
+    /* ============================================================
+       ANIMATED GRID BACKGROUND
+       Creates a moving grid using CSS gradients and keyframe animation
+       ============================================================ */
     body::before {
       content: '';
       position: fixed;
@@ -42,21 +53,27 @@
         linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
       background-size: 40px 40px;
       animation: gridMove 20s linear infinite;
-      pointer-events: none;
+      pointer-events: none; /* Prevent grid from blocking clicks */
     }
 
+    /* Moves the grid downward to simulate a scrolling effect */
     @keyframes gridMove {
       0% { transform: translateY(0); }
       100% { transform: translateY(40px); }
     }
 
-    /* Floating particles */
+    /* ============================================================
+       FLOATING PARTICLES
+       Container and individual particle styles
+       ============================================================ */
     .particles {
       position: fixed;
       inset: 0;
-      pointer-events: none;
+      pointer-events: none; /* Particles should not capture mouse events */
       overflow: hidden;
     }
+
+    /* Each particle is a tiny circle that floats upward */
     .particle {
       position: absolute;
       width: 2px;
@@ -64,15 +81,21 @@
       background: var(--neon-blue);
       border-radius: 50%;
       animation: float linear infinite;
-      opacity: 0;
-    }
-    @keyframes float {
-      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+      opacity: 0; /* Start invisible, fade in via keyframes */
     }
 
+    /* Particle float animation: rises from bottom to top with slight horizontal drift */
+    @keyframes float {
+      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10% { opacity: 1; }   /* Fade in quickly */
+      90% { opacity: 1; }   /* Stay visible most of the way */
+      100% { transform: translateY(-10vh) translateX(30px); opacity: 0; } /* Fade out at top */
+    }
+
+    /* ============================================================
+       CALCULATOR PANEL
+       Main container with neon border glow effect
+       ============================================================ */
     .calculator {
       position: relative;
       width: 340px;
@@ -86,7 +109,8 @@
         inset 0 1px 0 rgba(0, 212, 255, 0.1);
     }
 
-    /* Corner accents */
+    /* Corner accent decorations using pseudo-elements
+       Top-left corner: blue glow | Bottom-right corner: purple glow */
     .calculator::before, .calculator::after {
       content: '';
       position: absolute;
@@ -97,17 +121,18 @@
     }
     .calculator::before {
       top: -1px; left: -1px;
-      border-width: 2px 0 0 2px;
+      border-width: 2px 0 0 2px; /* Only top and left borders */
       border-radius: 16px 0 0 0;
       box-shadow: var(--glow-blue);
     }
     .calculator::after {
       bottom: -1px; right: -1px;
-      border-width: 0 2px 2px 0;
+      border-width: 0 2px 2px 0; /* Only bottom and right borders */
       border-radius: 0 0 16px 0;
       box-shadow: var(--glow-purple);
     }
 
+    /* Header: title on the left, status indicator on the right */
     .header {
       display: flex;
       justify-content: space-between;
@@ -123,6 +148,8 @@
       text-transform: uppercase;
       text-shadow: var(--glow-blue);
     }
+
+    /* Animated status dot - pulses to simulate an active system indicator */
     .status-dot {
       width: 6px; height: 6px;
       background: var(--neon-blue);
@@ -132,10 +159,13 @@
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      50% { opacity: 0.3; } /* Dim at midpoint to create pulsing effect */
     }
 
-    /* Display */
+    /* ============================================================
+       DISPLAY AREA
+       Shows the current expression (top) and result value (bottom)
+       ============================================================ */
     .display {
       background: #020208;
       border: 1px solid #1a1a3e;
@@ -145,11 +175,13 @@
       min-height: 90px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      align-items: flex-end;
+      justify-content: flex-end; /* Align content to bottom like a real calculator */
+      align-items: flex-end;     /* Right-align numbers */
       position: relative;
       overflow: hidden;
     }
+
+    /* Top glowing line decoration on the display */
     .display::before {
       content: '';
       position: absolute;
@@ -158,6 +190,8 @@
       background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
       opacity: 0.5;
     }
+
+    /* Shows the current operation (e.g., "12 + ") in a dimmed style */
     .display-expression {
       font-size: 12px;
       color: rgba(0, 212, 255, 0.4);
@@ -165,6 +199,8 @@
       word-break: break-all;
       text-align: right;
     }
+
+    /* Main number display */
     .display-value {
       font-family: 'Orbitron', monospace;
       font-size: 32px;
@@ -176,18 +212,24 @@
       line-height: 1.2;
       transition: all 0.1s;
     }
+
+    /* Flash class applied briefly on each input for visual feedback */
     .display-value.flash {
       color: var(--neon-blue);
       text-shadow: var(--glow-blue);
     }
 
-    /* Buttons grid */
+    /* ============================================================
+       BUTTON GRID
+       4-column responsive grid layout for calculator buttons
+       ============================================================ */
     .buttons {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
     }
 
+    /* Base button styles shared by all button types */
     button {
       font-family: 'Share Tech Mono', monospace;
       font-size: 16px;
@@ -203,6 +245,7 @@
       letter-spacing: 1px;
     }
 
+    /* Subtle gradient overlay on all buttons for depth effect */
     button::after {
       content: '';
       position: absolute;
@@ -211,11 +254,12 @@
       pointer-events: none;
     }
 
+    /* Slight scale-down on click for tactile feedback */
     button:active {
       transform: scale(0.94);
     }
 
-    /* Number buttons */
+    /* Number buttons (0-9): blue glow on hover */
     button.num {
       border-color: #1a1a3e;
     }
@@ -226,7 +270,7 @@
       background: #0d1a2a;
     }
 
-    /* Operator buttons */
+    /* Operator buttons (+, -, *, /): purple accent */
     button.op {
       color: var(--neon-purple);
       border-color: #2a1a3e;
@@ -240,7 +284,7 @@
       background: #180a2a;
     }
 
-    /* Clear / special */
+    /* Clear buttons (CLR, CE): pink/red accent for danger actions */
     button.clear {
       color: var(--neon-pink);
       border-color: #2a0a1a;
@@ -254,7 +298,7 @@
       box-shadow: var(--glow-pink), inset 0 0 10px rgba(255,0,128,0.05);
     }
 
-    /* Equals button */
+    /* Equals button: prominent blue gradient with strong glow */
     button.equals {
       background: linear-gradient(135deg, #00d4ff22, #bf00ff22);
       border-color: var(--neon-blue);
@@ -268,11 +312,12 @@
       box-shadow: 0 0 15px #00d4ff, 0 0 30px #00d4ff66;
     }
 
-    /* Zero spans 2 cols */
+    /* Zero button spans 2 columns to match standard calculator layout */
     button.zero {
       grid-column: span 2;
     }
 
+    /* Footer signature */
     .footer {
       margin-top: 16px;
       text-align: center;
@@ -285,126 +330,187 @@
 </head>
 <body>
 
+<!-- Particle container - populated dynamically via JavaScript -->
 <div class="particles" id="particles"></div>
 
 <div class="calculator">
+  <!-- Header: system title and active status indicator -->
   <div class="header">
     <span class="header-title">CALC_SYS v1.1</span>
     <div class="status-dot"></div>
   </div>
 
+  <!-- Display: shows expression history and current value -->
   <div class="display">
     <div class="display-expression" id="expression"></div>
     <div class="display-value" id="display">0</div>
   </div>
 
+  <!-- Button Grid: clear, operators, numbers, equals -->
   <div class="buttons">
+    <!-- Row 1: Clear all, Clear entry, Modulo, Division -->
     <button class="clear" onclick="clearAll()">CLR</button>
     <button class="clear" onclick="clearEntry()">CE</button>
     <button class="op" onclick="inputOperator('%')">%</button>
     <button class="op" onclick="inputOperator('/')">÷</button>
 
+    <!-- Row 2: 7, 8, 9, Multiply -->
     <button class="num" onclick="inputNumber('7')">7</button>
     <button class="num" onclick="inputNumber('8')">8</button>
     <button class="num" onclick="inputNumber('9')">9</button>
     <button class="op" onclick="inputOperator('*')">×</button>
 
+    <!-- Row 3: 4, 5, 6, Subtract -->
     <button class="num" onclick="inputNumber('4')">4</button>
     <button class="num" onclick="inputNumber('5')">5</button>
     <button class="num" onclick="inputNumber('6')">6</button>
     <button class="op" onclick="inputOperator('-')">−</button>
 
+    <!-- Row 4: 1, 2, 3, Add -->
     <button class="num" onclick="inputNumber('1')">1</button>
     <button class="num" onclick="inputNumber('2')">2</button>
     <button class="num" onclick="inputNumber('3')">3</button>
     <button class="op" onclick="inputOperator('+')">+</button>
 
+    <!-- Row 5: Zero (spans 2 cols), Decimal, Equals -->
     <button class="num zero" onclick="inputNumber('0')">0</button>
     <button class="num" onclick="inputDecimal()">.</button>
     <button class="equals" onclick="calculate()">=</button>
   </div>
 
+  <!-- Author signature footer -->
   <div class="footer">RAMIREZHENRY-DEV // 2026</div>
 </div>
 
 <script>
-  // Particles
+  // ============================================================
+  // PARTICLE SYSTEM
+  // Dynamically creates 20 floating particles with random
+  // positions, speeds, and colors (blue or purple)
+  // ============================================================
   const container = document.getElementById('particles');
   for (let i = 0; i < 20; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.animationDuration = (8 + Math.random() * 12) + 's';
-    p.style.animationDelay = (Math.random() * 10) + 's';
-    p.style.background = Math.random() > 0.5 ? '#00d4ff' : '#bf00ff';
+    p.style.left = Math.random() * 100 + 'vw';                        // Random horizontal start position
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';       // Random speed between 8-20s
+    p.style.animationDelay = (Math.random() * 10) + 's';              // Random delay so they don't all start at once
+    p.style.background = Math.random() > 0.5 ? '#00d4ff' : '#bf00ff'; // Randomly blue or purple
     container.appendChild(p);
   }
 
-  // Calculator logic
-  let currentValue = '0';
-  let previousValue = '';
-  let operator = null;
-  let shouldResetDisplay = false;
-  let expressionStr = '';
+  // ============================================================
+  // CALCULATOR STATE
+  // These variables track the current state of the calculator
+  // ============================================================
+  let currentValue = '0';        // The number currently shown on display
+  let previousValue = '';        // The number entered before an operator was pressed
+  let operator = null;           // The pending operator (+, -, *, /, %)
+  let shouldResetDisplay = false;// Flag: next number input should clear the display first
+  let expressionStr = '';        // The expression string shown above the main display
 
+  // DOM references for the display elements
   const display = document.getElementById('display');
   const expression = document.getElementById('expression');
 
+  // ============================================================
+  // updateDisplay(val)
+  // Updates the main display value and briefly applies a
+  // flash effect for visual feedback on each input
+  // ============================================================
   function updateDisplay(val) {
     display.textContent = val;
     display.classList.add('flash');
-    setTimeout(() => display.classList.remove('flash'), 100);
+    setTimeout(() => display.classList.remove('flash'), 100); // Remove flash after 100ms
   }
 
+  // ============================================================
+  // inputNumber(num)
+  // Appends a digit to the current value.
+  // If shouldResetDisplay is true, starts fresh with the new digit.
+  // Limits input to 12 characters to prevent overflow.
+  // ============================================================
   function inputNumber(num) {
     if (shouldResetDisplay) {
       currentValue = num;
       shouldResetDisplay = false;
     } else {
+      // Replace leading zero unless it's a decimal like "0."
       currentValue = currentValue === '0' ? num : currentValue + num;
     }
-    if (currentValue.length > 12) return;
+    if (currentValue.length > 12) return; // Prevent overflow on display
     updateDisplay(currentValue);
   }
 
+  // ============================================================
+  // inputDecimal()
+  // Adds a decimal point to the current value.
+  // Prevents duplicate decimal points.
+  // ============================================================
   function inputDecimal() {
     if (shouldResetDisplay) { currentValue = '0'; shouldResetDisplay = false; }
-    if (!currentValue.includes('.')) currentValue += '.';
+    if (!currentValue.includes('.')) currentValue += '.'; // Only add if no decimal exists
     updateDisplay(currentValue);
   }
 
+  // ============================================================
+  // inputOperator(op)
+  // Stores the current value and operator for later calculation.
+  // If an operator is already pending and the user hasn't reset,
+  // it chains the calculation (e.g., 2 + 3 * = calculates 2+3 first).
+  // ============================================================
   function inputOperator(op) {
-    if (operator && !shouldResetDisplay) calculate(true);
+    if (operator && !shouldResetDisplay) calculate(true); // Chain operations
     previousValue = currentValue;
     operator = op;
-    shouldResetDisplay = true;
+    shouldResetDisplay = true; // Next digit input will start a new number
+
+    // Convert internal operator symbol to display symbol
     const opSymbol = op === '*' ? '×' : op === '/' ? '÷' : op;
     expressionStr = previousValue + ' ' + opSymbol;
     expression.textContent = expressionStr;
   }
 
+  // ============================================================
+  // calculate(chaining)
+  // Performs the pending calculation using previousValue,
+  // operator, and currentValue.
+  // @param {boolean} chaining - If true, called from inputOperator
+  //   for operation chaining (suppresses full expression display)
+  // ============================================================
   function calculate(chaining = false) {
-    if (!operator || !previousValue) return;
+    if (!operator || !previousValue) return; // Nothing to calculate
+
     const prev = parseFloat(previousValue);
     const curr = parseFloat(currentValue);
     let result;
+
+    // Execute the appropriate arithmetic operation
     switch (operator) {
       case '+': result = prev + curr; break;
       case '-': result = prev - curr; break;
       case '*': result = prev * curr; break;
-      case '/': result = curr === 0 ? 'ERROR' : prev / curr; break;
+      case '/': result = curr === 0 ? 'ERROR' : prev / curr; break; // Guard against division by zero
       case '%': result = prev % curr; break;
     }
+
+    // Show the full expression in the secondary display (e.g., "12 + 5 =")
     const opSymbol = operator === '*' ? '×' : operator === '/' ? '÷' : operator;
     if (!chaining) {
       expression.textContent = previousValue + ' ' + opSymbol + ' ' + currentValue + ' =';
     }
+
+    // Store result, round to avoid floating point issues (e.g., 0.1 + 0.2 = 0.3)
     currentValue = result === 'ERROR' ? 'ERROR' : String(parseFloat(result.toFixed(10)));
     updateDisplay(currentValue);
-    operator = null;
-    shouldResetDisplay = true;
+    operator = null;           // Clear pending operator
+    shouldResetDisplay = true; // Next input starts a new number
   }
 
+  // ============================================================
+  // clearAll()
+  // Resets the entire calculator to its initial state
+  // ============================================================
   function clearAll() {
     currentValue = '0';
     previousValue = '';
@@ -415,22 +521,30 @@
     updateDisplay('0');
   }
 
+  // ============================================================
+  // clearEntry()
+  // Clears only the current entry without affecting the
+  // pending operation (similar to CE on physical calculators)
+  // ============================================================
   function clearEntry() {
     currentValue = '0';
     updateDisplay('0');
   }
 
-  // Keyboard support
+  // ============================================================
+  // KEYBOARD SUPPORT
+  // Maps keyboard keys to calculator functions for faster input
+  // ============================================================
   document.addEventListener('keydown', e => {
-    if (e.key >= '0' && e.key <= '9') inputNumber(e.key);
-    else if (e.key === '.') inputDecimal();
-    else if (e.key === '+') inputOperator('+');
-    else if (e.key === '-') inputOperator('-');
-    else if (e.key === '*') inputOperator('*');
-    else if (e.key === '/') { e.preventDefault(); inputOperator('/'); }
-    else if (e.key === 'Enter' || e.key === '=') calculate();
-    else if (e.key === 'Escape') clearAll();
-    else if (e.key === 'Backspace') clearEntry();
+    if (e.key >= '0' && e.key <= '9') inputNumber(e.key);         // Digit keys
+    else if (e.key === '.') inputDecimal();                         // Decimal point
+    else if (e.key === '+') inputOperator('+');                     // Addition
+    else if (e.key === '-') inputOperator('-');                     // Subtraction
+    else if (e.key === '*') inputOperator('*');                     // Multiplication
+    else if (e.key === '/') { e.preventDefault(); inputOperator('/'); } // Division (prevent browser search)
+    else if (e.key === 'Enter' || e.key === '=') calculate();       // Calculate result
+    else if (e.key === 'Escape') clearAll();                        // Clear all
+    else if (e.key === 'Backspace') clearEntry();                   // Clear current entry
   });
 </script>
 </body>
